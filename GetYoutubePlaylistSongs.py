@@ -91,7 +91,7 @@ else:
         process_video(video)
 
 songs_set = set(songs_list)
-if PROGRESS_BAR_ENABLE is False:
+if PROGRESS_BAR_ENABLE:
     for song in songs_set:
         print(song)
 print(f"\nNumber of videos: {len(playlist.items)}")
