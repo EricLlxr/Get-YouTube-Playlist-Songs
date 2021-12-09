@@ -2,9 +2,12 @@ from pyyoutube import Api
 import requests
 import click
 
-# Constants
+# Config
 API_KEY = "" # Add your own key here
 PLAYLIST_ID = "" # Example: PLFVbJV_jTp8Xqxs-vtwgRYj7yt5n0OO4N
+PROGRESS_BAR_ENABLE = True
+
+# Constants
 YT = "https://www.youtube.com/watch?v="
 MAX_BUFFER_SIZE = 128
 AMPERSAND = "\\u0026"
@@ -42,8 +45,9 @@ def process_video(video):
         no_songs_list.append(video.snippet.title)
         return
     artist_indexes = list(find_all(data, ARTIST_IDENTIFIER))
-
-    # print(f"{video.snippet.title}")
+    
+    if PROGRESS_BAR_ENABLE is False:
+        print(f"{video.snippet.title}")
     
     for i, song_index in enumerate(song_indexes):
         song_data = data[song_index:song_index + MAX_BUFFER_SIZE]
@@ -64,8 +68,11 @@ def process_video(video):
             artist = artist_data[3]
         artist = artist[1:artist[1:].find('"') + 1]
         
-        songs_list.append(f"{artist.replace(AMPERSAND, '&')} - {song.replace(AMPERSAND, '&')}")
-        # print(f"\t{artist.replace(AMPERSAND, '&')} - {song.replace(AMPERSAND, '&')}")
+        # Combine song name and and artist for the 'track'
+        track = f"{artist.replace(AMPERSAND, '&')} - {song.replace(AMPERSAND, '&')}"
+        songs_list.append(track)
+        if PROGRESS_BAR_ENABLE is False:
+            print(f"\t{track}")
 
 # Youtube API
 api = Api(api_key=API_KEY)
@@ -74,13 +81,19 @@ api = Api(api_key=API_KEY)
 itemCount = api.get_playlist_by_id(playlist_id=PLAYLIST_ID).items[0].contentDetails.itemCount
 playlist = api.get_playlist_items(playlist_id=PLAYLIST_ID, count=itemCount)
 
-with click.progressbar(playlist.items) as bar:
-    for video in bar:
+# Completely pointless but it's cool
+if PROGRESS_BAR_ENABLE:
+    with click.progressbar(playlist.items) as bar:
+        for video in bar:
+            process_video(video)
+else:
+    for video in playlist.items:
         process_video(video)
 
 songs_set = set(songs_list)
-for song in songs_set:
-    print(song)
+if PROGRESS_BAR_ENABLE is False:
+    for song in songs_set:
+        print(song)
 print(f"\nNumber of videos: {len(playlist.items)}")
 print(f"Total number of songs found: {len(songs_set)}")
 print(f"Could not find songs for {len(no_songs_list)} videos:\n {no_songs_list}")
