@@ -3,8 +3,8 @@ import requests
 import click
 
 # Constants
-API_KEY = ""
-PLAYLIST_ID = "PLFVbJV_jTp8Xqxs-vtwgRYj7yt5n0OO4N" # Example: PLFVbJV_jTp8Xqxs-vtwgRYj7yt5n0OO4N
+API_KEY = "" # Add your own key here
+PLAYLIST_ID = "" # Example: PLFVbJV_jTp8Xqxs-vtwgRYj7yt5n0OO4N
 YT = "https://www.youtube.com/watch?v="
 MAX_BUFFER_SIZE = 128
 AMPERSAND = "\\u0026"
